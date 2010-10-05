@@ -16,7 +16,8 @@ module Paperclip
         :default_style     => :original,
         :storage           => :filesystem,
         :use_timestamp     => true,
-        :whiny             => Paperclip.options[:whiny] || Paperclip.options[:whiny_thumbnails]
+        :whiny             => Paperclip.options[:whiny] || Paperclip.options[:whiny_thumbnails],
+        :clear_on_assign   => true
       }
     end
 
@@ -49,6 +50,7 @@ module Paperclip
       @queued_for_write  = {}
       @errors            = {}
       @dirty             = false
+      @clear_on_assign   = options[:clear_on_assign]
 
       initialize_storage
     end
@@ -84,7 +86,7 @@ module Paperclip
       return nil unless valid_assignment?(uploaded_file)
 
       uploaded_file.binmode if uploaded_file.respond_to? :binmode
-      self.clear
+      self.clear if @clear_on_assign
 
       return nil if uploaded_file.nil?
 
